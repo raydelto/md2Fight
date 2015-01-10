@@ -15,7 +15,7 @@ If you want to build this code on linux you first need to install the following 
 * GLU
 * SDL
 * SDL Mixer (for playing audio)
-* 
+
 If you are using Ubuntu you can install these libraries by typing the following command:
 ```
 sudo apt-get install build-essential libgl1-mesa-dev  libsdl-mixer1.2-dev
