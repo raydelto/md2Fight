@@ -1,21 +1,22 @@
-#include <SDL_mixer.h>
+#include <SDL/SDL_mixer.h>
 #include "md2Class.cpp"
 
-md2 player("data/tris.md2", "data/skin.tga");
-md2 player2("data/cyborg.md2", "data/cyborg1.tga");
-md2 player3("data/grunt.md2", "data/grunt.tga");
-md2 player4("data/female.md2", "data/female.tga");
-float avanza=0.0;
+md2 player((char*)"data/tris.md2", (char*)"data/skin.tga");
+md2 player2((char*)"data/cyborg.md2", (char*)"data/cyborg1.tga");
+md2 player3((char*)"data/grunt.md2", (char*)"data/grunt.tga");
+md2 player4((char*)"data/female.md2", (char*)"data/female.tga");
+float xIncrement=0.0;
 float zTrans=0.0;
-int aleja=0;
+int zoom=0;
 double elapsed;
-float xPlayer1=-69.0;
 bool jumping=false;
 bool jumpingUp=true;
 bool crowching=false;
 double jumpY=0.00;
 clock_t start, end;
-
+SDL_Event event;
+Mix_Music *music = NULL;
+float xPlayer1=-69.0;
 float ambientlight[] = {0.5, 0.5, 0.5, 1.0};
 float diffuselight[] = {0.9, 0.9, 0.9, 1.0};
 float LightPos[] = {0.0, 0.0, 0.0, 1.0};
@@ -24,8 +25,10 @@ float matspec[] = {1.0, 1.0, 0.0, 1.0};
 GLuint pa;
 GLuint sand;
 
-tga pa_d("data/lab.tga");
-tga sa("data/sand2.tga");
+tga pa_d((char*)"data/lab.tga");
+tga sa((char*)"data/sand2.tga");
+
+
 
 void init(void)
 {
@@ -77,7 +80,6 @@ double jump(void)
 
     if (jumping)
       {
-          printf("%f \n",jumpY);
     	   if (jumpingUp)
 	   {
 	     jumpY+=0.5;
@@ -85,7 +87,6 @@ double jump(void)
 	     if (jumpY>=16)
 	       {
                  jumpingUp=false;	       
-		 printf("%d \n",jumpY);
 	       }
 	   }
 	   else
@@ -98,12 +99,9 @@ double jump(void)
 
 
 	      }
-	   }
-	   
-          	  
+	   }    	  
       
-      }
-     
+      }     
 
 	 return jumpY;
  
@@ -112,12 +110,12 @@ void draw(void)
 {
 
 
-if(aleja==1){
+if(zoom==1){
 
 	zTrans+=1.2;
 }
 
-else if(aleja==-1){
+else if(zoom==-1){
 
 	zTrans-=1.2;
 }
@@ -152,7 +150,6 @@ else if(aleja==-1){
 
 	glPushMatrix();
 
-/*TO COMMENT*/
 	glTranslatef(0.0, -50.0, 0.0+zTrans);
 
 	glPushMatrix();
@@ -180,11 +177,10 @@ else if(aleja==-1){
 		player.Draw(40, 46);
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
-	/* **END TO COMMENT** */
 
 	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
-		xPlayer1+=avanza;
+		xPlayer1+=xIncrement;
 		if (xPlayer1 >=25.00) xPlayer1=24.99;
 		glTranslatef(xPlayer1, jump(), -100+zTrans);
 		
@@ -203,17 +199,15 @@ else if(aleja==-1){
 		
 		
 		glDisable(GL_TEXTURE_2D);
-	glPopMatrix();	
-
-/*         
+	glPopMatrix();	         
 
 	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
-		glTranslatef(-25, 0.0, -100);
+		glTranslatef(-25, 0.0, -150);
 		player3.Draw(40, 46);
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();	
-*/
+
 
 	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
@@ -229,10 +223,8 @@ else if(aleja==-1){
 		     player4.Draw(40, 46);
 		}
 
-
-
 		glDisable(GL_TEXTURE_2D);
-	glPopMatrix();	
+	glPopMatrix();
 
 	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
@@ -244,7 +236,7 @@ else if(aleja==-1){
 			glTexCoord2f(0.0, 0.0-run); glVertex3f(1000, -25.0, -1000);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);		
-	glPopMatrix();	
+	glPopMatrix();
 
 	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);	
@@ -261,17 +253,11 @@ else if(aleja==-1){
 		glEnd();
 		glDisable(GL_TEXTURE_2D);		
 	glPopMatrix();	
-	
 	glPopMatrix();
-	
 	glFlush();
 	SDL_GL_SwapBuffers();
 	
 }
-
-SDL_Event event;
-Mix_Music *music = NULL;
-
 
 int main(void)
 {
@@ -282,7 +268,11 @@ int main(void)
 	int audio_channels = 2;
 	int audio_buffers = 4096;
 
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+       if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+                printf("Unable to initialize SDL: %s\n", SDL_GetError());
+                return 1;
+        }
+
 
 	screen = SDL_SetVideoMode(800, 600, 0, SDL_OPENGL);
 	
@@ -299,17 +289,14 @@ int main(void)
 		exit(1);
 	}
 
-	SDL_WM_SetCaption("Game Engine by Raydelto Hernandez And Argenis Bilbao", "Game Engine by Raydelto Hernandez And Argenis Bilbao");  
-  	//music = Mix_LoadMUS("data/music/14.ogg");
-	Mix_PlayMusic(music, -1); 
-	//Mix_FreeMusic(music);
-	
+	SDL_WM_SetCaption("Game Engine by Raydelto Hernandez And Argenis Bilbao", "Game Engine by Raydelto Hernandez And Argenis Bilbao");	
 	init();
-
 	done = 0;
-
-
+  	music = Mix_LoadMUS("data/music/14.ogg");
+	Mix_PlayMusic(music, -1); 
+	Mix_FreeMusic(music);
 	start = clock();
+
 	while(!done) 
 	{
 		if(elapsed >= 0.0083)
@@ -330,11 +317,9 @@ int main(void)
 			
 		      	if ( event.type == SDL_KEYDOWN ) 
 			{
-				printf("xPlayer 1: %f\n",xPlayer1);
 
 				if(event.key.keysym.sym == SDLK_UP)
                                    {
-						printf("Brinca!\n");
 						jumping=true;
 
 				   }
@@ -342,7 +327,6 @@ int main(void)
 
 				if(event.key.keysym.sym == SDLK_DOWN)
                                    {
-						printf("Agachate!!\n");
 						crowching=true;
 
 				   }
@@ -351,16 +335,13 @@ int main(void)
 				
 				if(event.key.keysym.sym == SDLK_RIGHT)
                                    {
-                    			avanza=0.5;
-
-					
-           
+                    			xIncrement=0.5;           
 				   }
 
 
 				if(event.key.keysym.sym == SDLK_LEFT)
                                    {
-                    			avanza=-0.5;
+                    			xIncrement=-0.5;
            
 				   }
 
@@ -369,31 +350,23 @@ int main(void)
                     			done=1;
            
 				   }
-
-
-
 				if(event.key.keysym.sym == SDLK_h)
                                    {
-                    			aleja=1;
-					printf("Posicion en en z es %f",zTrans);
+                    			zoom=1;
            
 				   }
 				
 				if(event.key.keysym.sym == SDLK_g)
                                    {
-                    			aleja=-1;
-					printf("Posicion en en z es %f",zTrans);
+                    			zoom=-1;
            
 				   }
 				
 				if(event.key.keysym.sym == SDLK_j)
                                    {
-                    			aleja=0;
-					printf("Posicion en en z es %f",zTrans);
+                    			zoom=0;
            
-				   }
-
-				
+				   }			
 				
 			}
 
@@ -401,31 +374,19 @@ int main(void)
 		      	if ( event.type == SDL_KEYUP ) 
 			{
 
-                             avanza=0.0;
-
+                             xIncrement=0.0;
 
 				if(event.key.keysym.sym == SDLK_DOWN)
                                    {
-						printf("Parate!!\n");
 						crowching=false;
 
 				   }
-
-
-
 				
 			}
-
-
-			
-			
-
-
 
 		}
 	}
 	
-	SDL_Quit();
-	
+	SDL_Quit();	
 	return 0;
 }

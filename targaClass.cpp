@@ -36,7 +36,7 @@ public:
 		int s;
 		unsigned int length;
 		unsigned int temp;
-		int fu;
+		unsigned int fu;
 
 		fp=fopen(filename, "rb");
 
