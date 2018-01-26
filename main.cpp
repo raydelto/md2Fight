@@ -23,7 +23,6 @@ int zoom = 0;
 clock_t start, end;
 SDL_Event event;
 Mix_Music *music = NULL;
-GLuint pa;
 GLuint sand;
 tga pa_d((char *)"data/lab.tga");
 tga sa((char *)"data/sand2.tga");
@@ -49,8 +48,6 @@ void init(void)
 	glEnable(GL_CULL_FACE);
 
 	glEnable(GL_TEXTURE_2D);
-	glGenTextures(1, &pa);
-	glBindTexture(GL_TEXTURE_2D, pa);
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pa_d.width, pa_d.height, GL_RGB, GL_UNSIGNED_BYTE, pa_d.data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -231,7 +228,6 @@ void draw(void)
 
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, pa);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0 + run, 0.0);
 		glVertex3f(-1000, -25.0, -1000);
