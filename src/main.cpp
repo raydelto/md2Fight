@@ -1,4 +1,7 @@
-#include <SDL/SDL_mixer.h>
+// #include <SDL/SDL_mixer.h>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include "md2Class.cpp"
 
 bool maxm;
