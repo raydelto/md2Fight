@@ -85,6 +85,8 @@ void init(void)
 	glGenTextures(1, &pa);
 	glBindTexture(GL_TEXTURE_2D, pa);
 	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pa_d.width, pa_d.height, GL_RGB, GL_UNSIGNED_BYTE, pa_d.data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pa_d.width, pa_d.height, 0, GL_RGB, GL_UNSIGNED_BYTE, pa_d.data);
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -93,6 +95,7 @@ void init(void)
 	glGenTextures(1, &sand);
 	glBindTexture(GL_TEXTURE_2D, sand);
 	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, sa.width, sa.height, GL_RGB, GL_UNSIGNED_BYTE, sa.data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sa.width, sa.height, 0, GL_RGB, GL_UNSIGNED_BYTE, sa.data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
