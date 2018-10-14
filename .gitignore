@@ -5,3 +5,8 @@
 **/*.dll
 **/*.exe
 **/*.stackdump
+bin
+.DS_Store
+Debug
+**.exe
+**.sdf

@@ -1,4 +1,5 @@
-#include <SDL/SDL_mixer.h>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include "md2Class.cpp"
 
 bool maxm;
@@ -20,13 +21,17 @@ md2 player2((char *)"data/cyborg.md2", (char *)"data/cyborg1.tga");
 md2 player3((char *)"data/grunt.md2", (char *)"data/grunt.tga");
 md2 player4((char *)"data/female.md2", (char *)"data/female.tga");
 int zoom = 0;
-clock_t start, end;
-SDL_Event event;
-Mix_Music *music = NULL;
+double start, end;
 GLuint pa;
 GLuint sand;
 tga pa_d((char *)"data/lab.tga");
 tga sa((char *)"data/sand2.tga");
+const char* APP_TITLE = "Introduction to Modern OpenGL - Hello Colored Triangle";
+GLFWwindow *window;
+
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
 
 void init(void)
 {
@@ -249,116 +254,66 @@ void draw(void)
 	SDL_GL_SwapBuffers();
 }
 
+bool glfwInit()
+{
+    // glfw: initialize and configure
+    // ------------------------------
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
+
+    // glfw window creation
+    // --------------------
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, APP_TITLE, NULL, NULL);
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return false;
+    }
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // glad: load all OpenGL function pointers
+    // ---------------------------------------
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return false;
+    }
+
+
+	return true;
+}
+
 int main(void)
 {
-	SDL_Surface *screen;
 	int done;
-	int audio_rate = 44100;
-	Uint16 audio_format = AUDIO_S16; /* 16-bit stereo */
-	int audio_channels = 2;
-	int audio_buffers = 4096;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
+	if (!glfwInit())
 	{
-		printf("Unable to initialize SDL: %s\n", SDL_GetError());
+		printf("Unable to initialize GLFW");
 		return 1;
 	}
 
-	screen = SDL_SetVideoMode(400, 300, 0, SDL_OPENGL);
-
-	if (!screen)
-	{
-		fprintf(stderr, "Couldn't set 800x600 GL video mode: %s\n", SDL_GetError());
-		SDL_Quit();
-		exit(2);
-	}
-
-	if (Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers))
-	{
-		printf("Unable to open audio!\n");
-		exit(1);
-	}
-
-	SDL_WM_SetCaption("Game Engine by Raydelto Hernandez And Argenis Bilbao", "Game Engine by Raydelto Hernandez And Argenis Bilbao");
 	init();
 	done = 0;
-	music = Mix_LoadMUS("data/music/12.ogg");
-	Mix_PlayMusic(music, -1);
-	start = clock();
+	start = glfwGetTime();
 
 	while (!done)
 	{
 		if (elapsed >= 0.0083)
 		{
-			start = clock();
+			start = glfwGetTime();
 			draw();
 		}
-		end = clock();
-		elapsed = ((double)(end - start)) / CLOCKS_PER_SEC;
-
-		while (SDL_PollEvent(&event))
-		{
-			if (event.type == SDL_QUIT)
-			{
-				done = 1;
-			}
-
-			if (event.type == SDL_KEYDOWN)
-			{
-
-				if (event.key.keysym.sym == SDLK_UP)
-				{
-					jumping = true;
-				}
-
-				if (event.key.keysym.sym == SDLK_DOWN)
-				{
-					crowching = true;
-				}
-
-				if (event.key.keysym.sym == SDLK_RIGHT)
-				{
-					xIncrement = 0.5;
-				}
-
-				if (event.key.keysym.sym == SDLK_LEFT)
-				{
-					xIncrement = -0.5;
-				}
-
-				if (event.key.keysym.sym == SDLK_q)
-				{
-					done = 1;
-				}
-				if (event.key.keysym.sym == SDLK_h)
-				{
-					zoom = 1;
-				}
-
-				if (event.key.keysym.sym == SDLK_g)
-				{
-					zoom = -1;
-				}
-
-				if (event.key.keysym.sym == SDLK_j)
-				{
-					zoom = 0;
-				}
-			}
-
-			if (event.type == SDL_KEYUP)
-			{
-
-				xIncrement = 0.0;
-
-				if (event.key.keysym.sym == SDLK_DOWN)
-				{
-					crowching = false;
-				}
-			}
-		}
+		end = glfwGetTime();
+		elapsed = end - start;
 	}
-	Mix_FreeMusic(music);
-	SDL_Quit();
 	return 0;
 }

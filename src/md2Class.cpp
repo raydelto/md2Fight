@@ -1,3 +1,5 @@
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include "targaClass.cpp"
 
 typedef struct
@@ -53,10 +55,13 @@ typedef struct
 	unsigned short stIndex[3];
 } mesh;
 
-typedef struct
+namespace md2model
 {
-	float point[3];
-} vector;
+	typedef struct
+	{
+		float point[3];
+	} vector;
+}
 
 typedef struct
 {
@@ -72,7 +77,7 @@ typedef struct
 	float interpol;
 	mesh *triIndx;
 	textcoord *st;
-	vector *pointList;
+	md2model::vector *pointList;
 	float x, y, z;
 	float nextX, nextY, nextZ;
 	float radius;
@@ -120,7 +125,7 @@ class md2
 		textindx *stPtr;
 
 		frame *fra;
-		vector *pntlst;
+		md2model::vector *pntlst;
 		mesh *triIndex, *bufIndexPtr;
 
 		fp = fopen(filenme, "rb");
@@ -134,7 +139,7 @@ class md2
 		head = (header *)buffer;
 		mod = (modData *)malloc(sizeof(modData));
 
-		mod->pointList = (vector *)malloc(sizeof(vector) * head->vNum * head->Number_Of_Frames);
+		mod->pointList = (md2model::vector *)malloc(sizeof(md2model::vector) * head->vNum * head->Number_Of_Frames);
 		mod->numPoints = head->vNum;
 		mod->numFrames = head->Number_Of_Frames;
 		mod->frameSize = head->framesize;
@@ -142,7 +147,7 @@ class md2
 		for (int count = 0; count < head->Number_Of_Frames; count++)
 		{
 			fra = (frame *)&buffer[head->offsetFrames + head->framesize * count];
-			pntlst = (vector *)&mod->pointList[head->vNum * count];
+			pntlst = (md2model::vector *)&mod->pointList[head->vNum * count];
 			for (int count2 = 0; count2 < head->vNum; count2++)
 			{
 				pntlst[count2].point[0] = fra->scale[0] * fra->fp[count2].v[0] + fra->translate[0];
@@ -205,16 +210,16 @@ class md2
 			glEnable(GL_TEXTURE_2D);
 			glGenTextures(1, &textu);
 			glBindTexture(GL_TEXTURE_2D, textu);
-			gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texture.width, texture.height, GL_RGB, GL_UNSIGNED_BYTE, texture.data);
+			glGenerateMipmap(GL_TEXTURE_2D);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			done = 1;
 		}
 
-		vector *stFrame;
-		vector *cdFrame;
-		vector vector[3];
+		md2model::vector *stFrame;
+		md2model::vector *cdFrame;
+		md2model::vector vector[3];
 
 		float x1, y1, z1;
 		float x2, y2, z2;

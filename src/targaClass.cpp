@@ -3,10 +3,8 @@
 #include <string>
 #include <math.h>
 #include <time.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <SDL/SDL.h>
-#include <GL/glu.h>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 using namespace std;
 
