@@ -193,7 +193,7 @@ class md2
 	}
 
   public:
-	int done;
+	int done = 0;
 	char *textN;
 
 	md2(char *fName, char *textName)
@@ -210,7 +210,7 @@ class md2
 			glEnable(GL_TEXTURE_2D);
 			glGenTextures(1, &textu);
 			glBindTexture(GL_TEXTURE_2D, textu);
-			glGenerateMipmap(GL_TEXTURE_2D);
+			// glGenerateMipmap(GL_TEXTURE_2D);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

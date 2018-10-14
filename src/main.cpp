@@ -1,6 +1,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "md2Class.cpp"
+#include <iostream>
+
+using namespace std;
 
 bool maxm;
 bool jumping = false;
@@ -21,7 +24,6 @@ md2 player2((char *)"data/cyborg.md2", (char *)"data/cyborg1.tga");
 md2 player3((char *)"data/grunt.md2", (char *)"data/grunt.tga");
 md2 player4((char *)"data/female.md2", (char *)"data/female.tga");
 int zoom = 0;
-double start, end;
 GLuint pa;
 GLuint sand;
 tga pa_d((char *)"data/lab.tga");
@@ -33,11 +35,37 @@ GLFWwindow *window;
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
+}
+
+
+void perspectiveGL( GLdouble fovY, GLdouble aspect, GLdouble zNear, GLdouble zFar )
+{
+    const GLdouble pi = 3.1415926535897932384626433832795;
+    GLdouble fW, fH;
+
+    //fH = tan( (fovY / 2) / 180 * pi ) * zNear;
+    fH = tan( fovY / 360 * pi ) * zNear;
+    fW = fH * aspect;
+
+    glFrustum( -fW, fW, -fH, fH, zNear, zFar );
+}
+
 void init(void)
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90.0, 1.0, 2.0, 20000);
+	// gluPerspective(90.0, 1.0, 2.0, 20000);
+	perspectiveGL(90.0, 1.0, 2.0, 20000);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_LIGHTING);
 
@@ -56,7 +84,7 @@ void init(void)
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &pa);
 	glBindTexture(GL_TEXTURE_2D, pa);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pa_d.width, pa_d.height, GL_RGB, GL_UNSIGNED_BYTE, pa_d.data);
+	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pa_d.width, pa_d.height, GL_RGB, GL_UNSIGNED_BYTE, pa_d.data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -64,7 +92,7 @@ void init(void)
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &sand);
 	glBindTexture(GL_TEXTURE_2D, sand);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, sa.width, sa.height, GL_RGB, GL_UNSIGNED_BYTE, sa.data);
+	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, sa.width, sa.height, GL_RGB, GL_UNSIGNED_BYTE, sa.data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -251,20 +279,23 @@ void draw(void)
 	glPopMatrix();
 	glPopMatrix();
 	glFlush();
-	SDL_GL_SwapBuffers();
+	// SDL_GL_SwapBuffers();
 }
 
-bool glfwInit()
+bool initGlfw()
 {
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
+	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE); // uncomment this statement to fix compilation on OS X
 #endif
 
     // glfw window creation
@@ -291,29 +322,48 @@ bool glfwInit()
 	return true;
 }
 
+
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow *window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+
+
 int main(void)
 {
-	int done;
-
-	if (!glfwInit())
+	printf("A\n");
+	if (!initGlfw())
 	{
-		printf("Unable to initialize GLFW");
+		printf("Unable to initialize GLFW\n");
 		return 1;
 	}
+	int done;
+	double start, end;
 
+	printf("B\n");
 	init();
-	done = 0;
-	start = glfwGetTime();
 
-	while (!done)
+	start = glfwGetTime();
+	printf("C\n");
+	while (!glfwWindowShouldClose(window))
 	{
-		if (elapsed >= 0.0083)
-		{
-			start = glfwGetTime();
+		processInput(window);
+		// if (elapsed >= 0.0083)
+		// {
+		// 	start = glfwGetTime();
 			draw();
-		}
-		end = glfwGetTime();
-		elapsed = end - start;
+		// }
+		// end = glfwGetTime();
+		// elapsed = end - start;
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+
 	}
+	printf("D\n");
 	return 0;
 }
