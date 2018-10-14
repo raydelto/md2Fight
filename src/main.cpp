@@ -33,39 +33,39 @@ tga sa((char *)"data/sand2.tga");
 
 void init(void)
 {
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(90.0, 1.0, 2.0, 20000);
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_LIGHTING);
+	// glMatrixMode(GL_PROJECTION);
+	// glLoadIdentity();
+	// gluPerspective(90.0, 1.0, 2.0, 20000);
+	// glShadeModel(GL_SMOOTH);
+	// glEnable(GL_LIGHTING);
 
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientlight);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuselight);
-	glLightfv(GL_LIGHT0, GL_POSITION, LightPos);
+	// glLightfv(GL_LIGHT0, GL_AMBIENT, ambientlight);
+	// glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuselight);
+	// glLightfv(GL_LIGHT0, GL_POSITION, LightPos);
 
-	glEnable(GL_LIGHT0);
-	glEnable(GL_COLOR_MATERIAL);
-	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
-	glFrontFace(GL_CCW);
-	glEnable(GL_CULL_FACE);
+	// glEnable(GL_LIGHT0);
+	// glEnable(GL_COLOR_MATERIAL);
+	// glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	// glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_TEXTURE_2D);
+	// glFrontFace(GL_CCW);
+	// glEnable(GL_CULL_FACE);
 
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(1, &pa);
-	glBindTexture(GL_TEXTURE_2D, pa);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pa_d.width, pa_d.height, GL_RGB, GL_UNSIGNED_BYTE, pa_d.data);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	// glEnable(GL_TEXTURE_2D);
+	// glGenTextures(1, &pa);
+	// glBindTexture(GL_TEXTURE_2D, pa);
+	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pa_d.width, pa_d.height, GL_RGB, GL_UNSIGNED_BYTE, pa_d.data);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(1, &sand);
-	glBindTexture(GL_TEXTURE_2D, sand);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, sa.width, sa.height, GL_RGB, GL_UNSIGNED_BYTE, sa.data);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	// glEnable(GL_TEXTURE_2D);
+	// glGenTextures(1, &sand);
+	// glBindTexture(GL_TEXTURE_2D, sand);
+	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, sa.width, sa.height, GL_RGB, GL_UNSIGNED_BYTE, sa.data);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
 
