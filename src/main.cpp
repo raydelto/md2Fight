@@ -2,6 +2,8 @@
 #include <GLFW/glfw3.h>
 #include "md2Class.cpp"
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 using namespace std;
 
@@ -17,7 +19,6 @@ float ambientlight[] = {0.5, 0.5, 0.5, 1.0};
 float diffuselight[] = {0.9, 0.9, 0.9, 1.0};
 float LightPos[] = {0.0, 0.0, 0.0, 1.0};
 float matspec[] = {1.0, 1.0, 0.0, 1.0};
-double elapsed;
 float jumpY = 0.00;
 md2 player((char *)"data/tris.md2", (char *)"data/skin.tga");
 md2 player2((char *)"data/cyborg.md2", (char *)"data/cyborg1.tga");
@@ -337,36 +338,35 @@ void processInput(GLFWwindow *window)
 
 int main(void)
 {
-	printf("A\n");
 	if (!initGlfw())
 	{
 		printf("Unable to initialize GLFW\n");
 		return 1;
 	}
 	int done;
-	double start, end;
 
-	printf("B\n");
 	init();
 
-	start = glfwGetTime();
-	printf("C\n");
+	bool init = false;
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
-		// if (elapsed >= 0.0083)
-		// {
-		// 	start = glfwGetTime();
-			draw();
-		// }
-		// end = glfwGetTime();
-		// elapsed = end - start;
+		std::this_thread::sleep_for (std::chrono::milliseconds(10));
+
+		draw();
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
+		if(!init)
+		{
+			int x,y;
+			glfwGetWindowPos(window,&x,&y);
+			glfwSetWindowPos(window, x+1,y);
+			init = true;
+		}
+
 
 	}
-	printf("D\n");
 	return 0;
 }
