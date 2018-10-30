@@ -36,6 +36,8 @@ GLFWwindow *window;
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// Function prototypes
+void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 
@@ -46,6 +48,54 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+//-----------------------------------------------------------------------------
+// Is called whenever a key is pressed/released via GLFW
+//-----------------------------------------------------------------------------
+void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+	switch(action)
+	{
+	case GLFW_PRESS:
+		switch(key)
+		{
+			case GLFW_KEY_UP:
+				jumping = true;
+			break;
+			case GLFW_KEY_DOWN:
+				crowching = true;
+			break;
+			case GLFW_KEY_RIGHT:
+				xIncrement = 0.5;
+			break;
+			case GLFW_KEY_LEFT:
+				xIncrement = -0.5;
+			break;
+			case GLFW_KEY_H:
+				zoom = 1;
+			break;
+			case GLFW_KEY_G:
+				zoom = -1;
+			break;
+			case GLFW_KEY_J:
+				zoom = 0;
+			break;
+
+		}
+	break;
+
+	case GLFW_RELEASE:
+		xIncrement = 0.0;
+		switch(key)
+		{
+			case GLFW_KEY_DOWN:
+				crowching = false;
+			break;
+		}
+
+	break;
+	}
 }
 
 
@@ -312,6 +362,8 @@ bool initGlfw()
         return false;
     }
     glfwMakeContextCurrent(window);
+	// Set the required callback functions
+	glfwSetKeyCallback(window, glfw_onKey);	
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // glad: load all OpenGL function pointers
@@ -365,8 +417,6 @@ int main(void)
 			glfwSetWindowPos(window, x+1,y);
 			init = true;
 		}
-
-
 	}
 	return 0;
 }
