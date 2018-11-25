@@ -15,11 +15,13 @@ endif
 
 SRC += src/Tga.cpp \
 	   src/Md2.cpp \
+	   src/ShaderProgram.cpp \
 	   src/main.cpp
 
 
 OBJ += 	bin/Tga.o \
 		bin/Md2.o \
+		bin/ShaderProgram.o \
 		bin/main.o
 
 WARNINGS=-w
@@ -30,4 +32,4 @@ all:
 	g++ -c $(SRC) $(INCLUDES) $(WARNINGS) $(FLAGS)
 	ls bin>/dev/null||mkdir bin
 	mv *.o ./bin
-	g++ $(OBJ) $(FRAMEWORKS) $(LIBS) $(INCLUDES) -o bin/main $(WARNINGS) $(FLAGS)
+	g++ $(OBJ) $(FRAMEWORKS) $(LIBS) $(INCLUDES) -g -o bin/main $(WARNINGS) $(FLAGS)

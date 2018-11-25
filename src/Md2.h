@@ -94,6 +94,7 @@ class Md2
     modData *m_model;
     char *m_textureName;
     bool m_initialized;
+    GLuint m_texture;
 
     void Normal(float *p1, float *p2, float *p3);
     void Load(char *filenme);
