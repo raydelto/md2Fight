@@ -29,7 +29,7 @@ GLuint pa;
 GLuint sand;
 Tga pa_d((char *)"data/lab.tga");
 Tga sa((char *)"data/sand2.tga");
-const char* APP_TITLE = "Introduction to Modern OpenGL - Hello Colored Triangle";
+const char* APP_TITLE = "MD2 Fight v0.2";
 GLFWwindow *window;
 
 // settings
