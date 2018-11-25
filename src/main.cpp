@@ -115,7 +115,6 @@ void init(void)
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	// gluPerspective(90.0, 1.0, 2.0, 20000);
 	perspectiveGL(90.0, 1.0, 2.0, 20000);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_LIGHTING);
@@ -135,7 +134,6 @@ void init(void)
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &pa);
 	glBindTexture(GL_TEXTURE_2D, pa);
-	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pa_d.GetWidth(), pa_d.GetHeight(), GL_RGB, GL_UNSIGNED_BYTE, pa_d.GetData());
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pa_d.GetWidth(), pa_d.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, pa_d.GetData());
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -145,7 +143,6 @@ void init(void)
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &sand);
 	glBindTexture(GL_TEXTURE_2D, sand);
-	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, sa.GetWidth(), sa.GetHeight(), GL_RGB, GL_UNSIGNED_BYTE, sa.GetData());
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sa.GetWidth(), sa.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, sa.GetData());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
