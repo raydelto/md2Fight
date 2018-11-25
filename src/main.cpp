@@ -1,6 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "md2Class.cpp"
+#include "Md2.h"
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -20,15 +20,15 @@ float diffuselight[] = {0.9, 0.9, 0.9, 1.0};
 float LightPos[] = {0.0, 0.0, 0.0, 1.0};
 float matspec[] = {1.0, 1.0, 0.0, 1.0};
 float jumpY = 0.00;
-md2 player((char *)"data/tris.md2", (char *)"data/skin.tga");
-md2 player2((char *)"data/cyborg.md2", (char *)"data/cyborg1.tga");
-md2 player3((char *)"data/grunt.md2", (char *)"data/grunt.tga");
-md2 player4((char *)"data/female.md2", (char *)"data/female.tga");
+Md2 player((char *)"data/tris.md2", (char *)"data/skin.tga");
+Md2 player2((char *)"data/cyborg.md2", (char *)"data/cyborg1.tga");
+Md2 player3((char *)"data/grunt.md2", (char *)"data/grunt.tga");
+Md2 player4((char *)"data/female.md2", (char *)"data/female.tga");
 int zoom = 0;
 GLuint pa;
 GLuint sand;
-tga pa_d((char *)"data/lab.tga");
-tga sa((char *)"data/sand2.tga");
+Tga pa_d((char *)"data/lab.tga");
+Tga sa((char *)"data/sand2.tga");
 const char* APP_TITLE = "Introduction to Modern OpenGL - Hello Colored Triangle";
 GLFWwindow *window;
 
@@ -135,8 +135,8 @@ void init(void)
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &pa);
 	glBindTexture(GL_TEXTURE_2D, pa);
-	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pa_d.width, pa_d.height, GL_RGB, GL_UNSIGNED_BYTE, pa_d.data);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pa_d.width, pa_d.height, 0, GL_RGB, GL_UNSIGNED_BYTE, pa_d.data);
+	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, pa_d.GetWidth(), pa_d.GetHeight(), GL_RGB, GL_UNSIGNED_BYTE, pa_d.GetData());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pa_d.GetWidth(), pa_d.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, pa_d.GetData());
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -145,8 +145,8 @@ void init(void)
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &sand);
 	glBindTexture(GL_TEXTURE_2D, sand);
-	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, sa.width, sa.height, GL_RGB, GL_UNSIGNED_BYTE, sa.data);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sa.width, sa.height, 0, GL_RGB, GL_UNSIGNED_BYTE, sa.data);
+	// gluBuild2DMipmaps(GL_TEXTURE_2D, 3, sa.GetWidth(), sa.GetHeight(), GL_RGB, GL_UNSIGNED_BYTE, sa.GetData());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sa.GetWidth(), sa.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, sa.GetData());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

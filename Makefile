@@ -13,13 +13,13 @@ SRC=third-party-source-code/glad.c
 OBJ=bin/glad.o
 endif
 
-SRC += src/targaClass.cpp \
-	   src/md2Class.cpp \
+SRC += src/Tga.cpp \
+	   src/Md2.cpp \
 	   src/main.cpp
 
 
-OBJ += 	bin/targaClass.o \
-		bin/md2Class.o \
+OBJ += 	bin/Tga.o \
+		bin/Md2.o \
 		bin/main.o
 
 WARNINGS=-w
