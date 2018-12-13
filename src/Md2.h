@@ -1,4 +1,6 @@
 #pragma once
+#include <map>
+#include <vector>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Tga.h"
@@ -87,6 +89,14 @@ typedef struct
     float speed;
 } modData;
 
+struct vertex
+{
+    float x;
+    float y;
+    float z;
+    textcoord texture;
+};
+
 class Md2
 {
   private:
@@ -94,10 +104,12 @@ class Md2
     modData *m_model;
     char *m_textureName;
     bool m_initialized;
-    GLuint m_texture;
+    GLuint m_vao;
+    std::map<int, GLuint> m_modelBuffers;
+    std::map<int, std::vector<vertex>> m_modelVertices;
 
-    void Normal(float *p1, float *p2, float *p3);
     void Load(char *filenme);
+    void LoadFrame(int frame);
 
   public:
     Md2(char *fName, char *textName);

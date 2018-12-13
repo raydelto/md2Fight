@@ -2,7 +2,69 @@
 
 Md2::Md2(char *fName, char *textName) : m_textureName(textName), m_initialized(false)
 {
+	glGenVertexArrays(1, &m_vao);
 	Load(fName);
+}
+
+void Md2::LoadFrame(int frame)
+{
+
+	glBindVertexArray(m_vao);
+	if (m_modelBuffers[frame])
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_modelBuffers[frame]);
+	}
+	else
+	{
+		GLuint vbo;
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		m_modelBuffers[frame] = vbo;
+
+		md2model::vector *stFrame;
+
+		stFrame = &m_model->pointList[m_model->numPoints * m_model->currentFrame];
+
+		for (int index = 0; index < m_model->numTriangles; index++)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				int mIndex = 0;
+				switch (i)
+				{
+				case 0:
+					mIndex = 0;
+					break;
+				case 1:
+					mIndex = 2;
+					break;
+				case 2:
+					mIndex = 1;
+					break;
+				}
+				vertex tmpVertex;
+				tmpVertex.texture.s = m_model->st[m_model->triIndx[index].stIndex[mIndex]].s;
+				tmpVertex.texture.t = m_model->st[m_model->triIndx[index].stIndex[mIndex]].t;
+				tmpVertex.x = stFrame[m_model->triIndx[index].meshIndex[mIndex]].point[0];
+				tmpVertex.y = stFrame[m_model->triIndx[index].meshIndex[mIndex]].point[1];
+				tmpVertex.z = stFrame[m_model->triIndx[index].meshIndex[mIndex]].point[2];
+				m_modelVertices[frame].push_back(tmpVertex);
+			}
+
+			glBufferData(GL_ARRAY_BUFFER, m_modelVertices.size() * sizeof(vertex), &m_modelVertices[frame][0], GL_STATIC_DRAW);
+
+			// Vertex Positions
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(vertex), (GLvoid *)0);
+
+			// Vertex Texture Coords
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_TRUE, sizeof(vertex), (GLvoid *)(3 * sizeof(GLfloat)));
+		}
+	}
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glDrawArrays(GL_TRIANGLES, 0, m_modelVertices[frame].size());	
 }
 
 void Md2::Draw(int startFrame, int endFrame)
@@ -20,13 +82,11 @@ void Md2::Draw(int startFrame, int endFrame)
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.GetWidth(), texture.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.GetData());
 		glGenerateMipmap(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, 0); 
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 		m_initialized = true;
 	}
 	glBindTexture(GL_TEXTURE_2D, m_texture);
-
-	md2model::vector *stFrame;
 
 	if (m_model->interpol == 0.0)
 	{
@@ -50,49 +110,8 @@ void Md2::Draw(int startFrame, int endFrame)
 			m_model->nextFrame = startFrame;
 		}
 	}
-
-	stFrame = &m_model->pointList[m_model->numPoints * m_model->currentFrame];
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, m_texture);
-	glRotatef(-90.0, 1.0, 0.0, 0.0);
-	glBegin(GL_TRIANGLES);
-	for (int index = 0; index < m_model->numTriangles; index++)
-	{
-
-		glTexCoord2f(m_model->st[m_model->triIndx[index].stIndex[0]].s, m_model->st[m_model->triIndx[index].stIndex[0]].t);
-		glVertex3fv(stFrame[m_model->triIndx[index].meshIndex[0]].point);
-
-		glTexCoord2f(m_model->st[m_model->triIndx[index].stIndex[2]].s, m_model->st[m_model->triIndx[index].stIndex[2]].t);
-		glVertex3fv(stFrame[m_model->triIndx[index].meshIndex[2]].point);
-
-		glTexCoord2f(m_model->st[m_model->triIndx[index].stIndex[1]].s, m_model->st[m_model->triIndx[index].stIndex[1]].t);
-		glVertex3fv(stFrame[m_model->triIndx[index].meshIndex[1]].point);
-	}
-	glEnd();
+	LoadFrame(m_model->nextFrame);
 	m_model->interpol += 0.1;
-}
-
-void Md2::Normal(float *p1, float *p2, float *p3)
-{
-	float a[3], b[3], result[3];
-	float length;
-
-	a[0] = p1[0] - p2[0];
-	a[1] = p1[1] - p2[1];
-	a[2] = p1[2] - p2[2];
-
-	b[0] = p1[0] - p3[0];
-	b[1] = p1[1] - p3[1];
-	b[2] = p1[2] - p3[2];
-
-	result[0] = a[1] * b[2] - b[1] * a[2];
-	result[1] = b[0] * a[2] - a[0] * b[2];
-	result[2] = a[0] * b[1] - b[0] * a[1];
-
-	length = sqrt(result[0] * result[0] + result[1] * result[1] + result[2] * result[2]);
-
-	glNormal3f(result[0] / length, result[1] / length, result[2] / length);
 }
 
 void Md2::Load(char *filenme)
