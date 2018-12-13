@@ -27,11 +27,6 @@ void Md2::Draw(int startFrame, int endFrame)
 	glBindTexture(GL_TEXTURE_2D, m_texture);
 
 	md2model::vector *stFrame;
-	md2model::vector *cdFrame;
-	md2model::vector vector[3];
-
-	float x1, y1, z1;
-	float x2, y2, z2;
 
 	if (m_model->interpol == 0.0)
 	{
@@ -57,7 +52,6 @@ void Md2::Draw(int startFrame, int endFrame)
 	}
 
 	stFrame = &m_model->pointList[m_model->numPoints * m_model->currentFrame];
-	cdFrame = &m_model->pointList[m_model->numPoints * m_model->nextFrame];
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
@@ -65,52 +59,15 @@ void Md2::Draw(int startFrame, int endFrame)
 	glBegin(GL_TRIANGLES);
 	for (int index = 0; index < m_model->numTriangles; index++)
 	{
-		x1 = stFrame[m_model->triIndx[index].meshIndex[0]].point[0];
-		y1 = stFrame[m_model->triIndx[index].meshIndex[0]].point[1];
-		z1 = stFrame[m_model->triIndx[index].meshIndex[0]].point[2];
-
-		x2 = cdFrame[m_model->triIndx[index].meshIndex[0]].point[0];
-		y2 = cdFrame[m_model->triIndx[index].meshIndex[0]].point[1];
-		z2 = cdFrame[m_model->triIndx[index].meshIndex[0]].point[2];
-
-		vector[0].point[0] = x1 + m_model->interpol * (x2 - x1);
-		vector[0].point[1] = y1 + m_model->interpol * (y2 - y1);
-		vector[0].point[2] = z1 + m_model->interpol * (z2 - z1);
-
-		x1 = stFrame[m_model->triIndx[index].meshIndex[2]].point[0];
-		y1 = stFrame[m_model->triIndx[index].meshIndex[2]].point[1];
-		z1 = stFrame[m_model->triIndx[index].meshIndex[2]].point[2];
-
-		x2 = cdFrame[m_model->triIndx[index].meshIndex[2]].point[0];
-		y2 = cdFrame[m_model->triIndx[index].meshIndex[2]].point[1];
-		z2 = cdFrame[m_model->triIndx[index].meshIndex[2]].point[2];
-
-		vector[2].point[0] = x1 + m_model->interpol * (x2 - x1);
-		vector[2].point[1] = y1 + m_model->interpol * (y2 - y1);
-		vector[2].point[2] = z1 + m_model->interpol * (z2 - z1);
-
-		x1 = stFrame[m_model->triIndx[index].meshIndex[1]].point[0];
-		y1 = stFrame[m_model->triIndx[index].meshIndex[1]].point[1];
-		z1 = stFrame[m_model->triIndx[index].meshIndex[1]].point[2];
-
-		x2 = cdFrame[m_model->triIndx[index].meshIndex[1]].point[0];
-		y2 = cdFrame[m_model->triIndx[index].meshIndex[1]].point[1];
-		z2 = cdFrame[m_model->triIndx[index].meshIndex[1]].point[2];
-
-		vector[1].point[0] = x1 + m_model->interpol * (x2 - x1);
-		vector[1].point[1] = y1 + m_model->interpol * (y2 - y1);
-		vector[1].point[2] = z1 + m_model->interpol * (z2 - z1);
-
-		Normal(vector[0].point, vector[2].point, vector[1].point);
 
 		glTexCoord2f(m_model->st[m_model->triIndx[index].stIndex[0]].s, m_model->st[m_model->triIndx[index].stIndex[0]].t);
-		glVertex3fv(vector[0].point);
+		glVertex3fv(stFrame[m_model->triIndx[index].meshIndex[0]].point);
 
 		glTexCoord2f(m_model->st[m_model->triIndx[index].stIndex[2]].s, m_model->st[m_model->triIndx[index].stIndex[2]].t);
-		glVertex3fv(vector[2].point);
+		glVertex3fv(stFrame[m_model->triIndx[index].meshIndex[2]].point);
 
 		glTexCoord2f(m_model->st[m_model->triIndx[index].stIndex[1]].s, m_model->st[m_model->triIndx[index].stIndex[1]].t);
-		glVertex3fv(vector[1].point);
+		glVertex3fv(stFrame[m_model->triIndx[index].meshIndex[1]].point);
 	}
 	glEnd();
 	m_model->interpol += 0.1;
