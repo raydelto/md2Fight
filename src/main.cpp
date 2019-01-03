@@ -1,11 +1,14 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include <iostream>
 #include <thread>
 #include <chrono>
 
 #include "Md2.h"
 #include "ShaderProgram.h"
+#include "Camera.h"
 
 using namespace std;
 
@@ -22,10 +25,7 @@ float diffuselight[] = {0.9, 0.9, 0.9, 1.0};
 float LightPos[] = {0.0, 0.0, 0.0, 1.0};
 float matspec[] = {1.0, 1.0, 0.0, 1.0};
 float jumpY = 0.00;
-Md2 player((char *)"data/tris.md2", (char *)"data/skin.tga");
-Md2 player2((char *)"data/cyborg.md2", (char *)"data/cyborg1.tga");
-Md2 player3((char *)"data/grunt.md2", (char *)"data/grunt.tga");
-Md2 player4((char *)"data/female.md2", (char *)"data/female.tga");
+Md2* player;
 int zoom = 0;
 GLuint pa;
 GLuint sand;
@@ -33,6 +33,7 @@ Tga pa_d((char *)"data/lab.tga");
 Tga sa((char *)"data/sand2.tga");
 const char *APP_TITLE = "MD2 Fight v0.2";
 GLFWwindow *window;
+FPSCamera fpsCamera(glm::vec3(0.0f, 3.0f, 10.0f));
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -186,36 +187,40 @@ void draw(void)
 		angle = -angle;
 	}
 
-	player.Draw(40, 46);
+	player->Draw(40, 46);
 
-	if (jumping)
-	{
-		player2.Draw(67, 73);
-	}
-	else if (crowching)
-	{
-		player2.Draw(136, 154);
-	}
-	else
-	{
-		player2.Draw(40, 46);
-	}
+	// if (jumping)
+	// {
+	// 	player2->Draw(67, 73);
+	// }
+	// else if (crowching)
+	// {
+	// 	player2->Draw(136, 154);
+	// }
+	// else
+	// {
+	// 	player2->Draw(40, 46);
+	// }
 
-	player3.Draw(40, 46);
+	// player3->Draw(40, 46);
 
-	if (crowching)
-	{
-		player4.Draw(113, 122);
-	}
-	else
-	{
-		player4.Draw(40, 46);
-	}
+	// if (crowching)
+	// {
+	// 	player4->Draw(113, 122);
+	// }
+	// else
+	// {
+	// 	player4->Draw(40, 46);
+	// }
 }
 
 void initOpenGl()
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
+	player = new Md2((char *)"data/tris.md2", (char *)"data/skin.tga");
+	// player2 = new Md2((char *)"data/cyborg.md2", (char *)"data/cyborg1.tga");
+	// player3 = new Md2((char *)"data/grunt.md2", (char *)"data/grunt.tga");
+	// player4 = new Md2((char *)"data/female.md2", (char *)"data/female.tga");	
 }
 
 bool initGlfw()
@@ -266,6 +271,7 @@ void processInput(GLFWwindow *window)
 
 int main(void)
 {
+	cout << "DALE" << endl;
 	if (!initGlfw())
 	{
 		printf("Unable to initialize GLFW\n");
@@ -277,12 +283,29 @@ int main(void)
 	bool init = false;
 	ShaderProgram shaderProgram;
 	shaderProgram.loadShaders("shaders/basic.vert", "shaders/basic.frag");
-	shaderProgram.use();
+	
+
+	glm::mat4 model, view, projection;
+
 
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+				// Create the View matrix
+		view = fpsCamera.getViewMatrix();
+
+		// Create the projection matrix
+		projection = glm::perspective(glm::radians(fpsCamera.getFOV()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 200.0f);
+		shaderProgram.use();
+		// Pass the matrices to the shader
+		shaderProgram.setUniform("view", view);
+		shaderProgram.setUniform("projection", projection);
+
+		model = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -6.0f)) * glm::scale(glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f));
+		shaderProgram.setUniform("model", model);		
+
 
 		draw();
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
