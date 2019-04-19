@@ -10,3 +10,4 @@ bin
 Debug
 **.exe
 **.sdf
+.vscode/ipch
