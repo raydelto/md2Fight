@@ -8,9 +8,13 @@
 using namespace std;
 
 bool maxm;
+float yValue = 0.0f;
+float yInc = 0.0f;
 bool jumping = false;
 bool jumpingUp = true;
 bool crowching = false;
+float rot = 0.0f;
+float rotInc = 0.0f;
 float angle, run, transL;
 float xIncrement = 0.0;
 float zTrans = 0.0;
@@ -20,21 +24,16 @@ float diffuselight[] = {0.9, 0.9, 0.9, 1.0};
 float LightPos[] = {0.0, 0.0, 0.0, 1.0};
 float matspec[] = {1.0, 1.0, 0.0, 1.0};
 float jumpY = 0.00;
-Md2 player((char *)"data/tris.md2", (char *)"data/skin.tga");
-Md2 player2((char *)"data/cyborg.md2", (char *)"data/cyborg1.tga");
-Md2 player3((char *)"data/grunt.md2", (char *)"data/grunt.tga");
 Md2 player4((char *)"data/female.md2", (char *)"data/female.tga");
 int zoom = 0;
 GLuint pa;
 GLuint sand;
-Tga pa_d((char *)"data/lab.tga");
-Tga sa((char *)"data/sand2.tga");
 const char* APP_TITLE = "MD2 Fight v0.2";
 GLFWwindow *window;
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1280;
+const unsigned int SCR_HEIGHT = 720;
 
 // Function prototypes
 void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -60,11 +59,20 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 	case GLFW_PRESS:
 		switch(key)
 		{
-			case GLFW_KEY_UP:
+
+			case GLFW_KEY_L:
 				jumping = true;
 			break;
-			case GLFW_KEY_DOWN:
+			case GLFW_KEY_K:
 				crowching = true;
+			break;
+
+			case GLFW_KEY_UP:
+				yInc = 1.0f;
+				
+			break;
+			case GLFW_KEY_DOWN:
+				yInc = -1.0f;
 			break;
 			case GLFW_KEY_RIGHT:
 				xIncrement = 0.5;
@@ -81,6 +89,16 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 			case GLFW_KEY_J:
 				zoom = 0;
 			break;
+			case GLFW_KEY_B:
+				rotInc = 1.0f;
+			break;
+			case GLFW_KEY_V:
+				rotInc = -1.0f;
+			break;
+			case GLFW_KEY_N:
+				rotInc = 0.0f;
+			break;
+
 
 		}
 	break;
@@ -89,8 +107,16 @@ void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mode)
 		xIncrement = 0.0;
 		switch(key)
 		{
-			case GLFW_KEY_DOWN:
+			case GLFW_KEY_K:
 				crowching = false;
+			break;
+			case GLFW_KEY_V:
+			case GLFW_KEY_B:
+				rotInc = 0.0f;
+			break;
+			case GLFW_KEY_DOWN:
+			case GLFW_KEY_UP:
+				yInc = 0.0f;
 			break;
 		}
 
@@ -130,23 +156,6 @@ void init(void)
 	glEnable(GL_TEXTURE_2D);
 	glFrontFace(GL_CCW);
 	glEnable(GL_CULL_FACE);
-
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(1, &pa);
-	glBindTexture(GL_TEXTURE_2D, pa);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pa_d.GetWidth(), pa_d.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, pa_d.GetData());
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(1, &sand);
-	glBindTexture(GL_TEXTURE_2D, sand);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sa.GetWidth(), sa.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, sa.GetData());
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
 
@@ -216,14 +225,8 @@ void draw(void)
 		run += 0.01;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearColor(0.0, 1.0, 0.0, 0.0);
 
-	glPushMatrix();
-
-	glTranslatef(0.0, -50.0, 0.0 + zTrans);
-
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
 
 	if (transL >= 40)
 	{
@@ -234,56 +237,15 @@ void draw(void)
 		maxm = false;
 	}
 
-	angle = 50 * atan((sin(run) * cos(run)) / sqrt((1 - (sin(run) * sin(run)))));
-	if (maxm)
-	{
-		transL -= 0.01;
-	}
-	else
-	{
-		transL += 0.01;
-		angle = -angle;
-	}
-
-	glTranslatef(-50 + (transL * 3), 0.0, -150 - (50 * sqrt(1 - (sin(transL) * sin(transL)))) + zTrans);
-	glRotatef(angle, 0.0, 1.0, 0.0);
-	player.Draw(40, 46);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
 	xPlayer1 += xIncrement;
-	if (xPlayer1 >= 25.00)
-		xPlayer1 = 24.99;
-	glTranslatef(xPlayer1, jump(), -100 + zTrans);
-
-	if (jumping)
-	{
-		player2.Draw(67, 73);
-	}
-	else if (crowching)
-	{
-		player2.Draw(136, 154);
-	}
-	else
-	{
-		player2.Draw(40, 46);
-	}
-
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
 
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
-	glTranslatef(-25, 0.0, -150);
-	player3.Draw(40, 46);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glTranslatef(xPlayer1 + 50, 0.0, -100 + zTrans);
+	yValue += yInc;
+	glTranslatef(xPlayer1, yValue, -100 + zTrans);
+	
+	rot += rotInc;
+	glRotatef(rot , 0.0, 1.0, 0.0);
 
 	if (crowching)
 	{
@@ -291,46 +253,13 @@ void draw(void)
 	}
 	else
 	{
-		player4.Draw(40, 46);
+		player4.Draw(0, 39);
 	}
 
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, sand);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0, 10.0 - run);
-		glVertex3f(-1000, -25.0, -1000);
-		glTexCoord2f(10.0, 10.0 - run);
-		glVertex3f(-1000, -25.0, 1000);
-		glTexCoord2f(10.0, 0.0 - run);
-		glVertex3f(1000, -25.0, 1000);
-		glTexCoord2f(0.0, 0.0 - run);
-		glVertex3f(1000, -25.0, -1000);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, pa);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0 + run, 0.0);
-		glVertex3f(-1000, -25.0, -1000);
-		glTexCoord2f(1.0 + run, 0.0);
-		glVertex3f(1000, -25.0, -1000);
-		glTexCoord2f(1.0 + run, 1.0);
-		glVertex3f(1000, 1100.0, -1000);
-		glTexCoord2f(0.0 + run, 1.0);
-		glVertex3f(-1000, 1100.0, -1000);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-	glPopMatrix();
 	glFlush();
-	// SDL_GL_SwapBuffers();
 }
 
 bool initGlfw()
@@ -341,13 +270,7 @@ bool initGlfw()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
-	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-
-#ifdef __APPLE__
-    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE); // uncomment this statement to fix compilation on OS X
-#endif
 
     // glfw window creation
     // --------------------
@@ -371,10 +294,8 @@ bool initGlfw()
         return false;
     }
 
-
 	return true;
 }
-
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
