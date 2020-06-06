@@ -20,7 +20,7 @@ md2 player2((char *)"data/cyborg.md2", (char *)"data/cyborg1.tga");
 md2 player3((char *)"data/grunt.md2", (char *)"data/grunt.tga");
 md2 player4((char *)"data/female.md2", (char *)"data/female.tga");
 int zoom = 0;
-clock_t start, end;
+clock_t clockStart, clockEnd;
 SDL_Event event;
 Mix_Music *music = NULL;
 GLuint pa;
@@ -284,17 +284,17 @@ int main(void)
 	done = 0;
 	music = Mix_LoadMUS("data/music/12.ogg");
 	Mix_PlayMusic(music, -1);
-	start = clock();
+	clockStart = clock();
 
 	while (!done)
 	{
 		if (elapsed >= 0.0083)
 		{
-			start = clock();
+			clockStart = clock();
 			draw();
 		}
-		end = clock();
-		elapsed = ((double)(end - start)) / CLOCKS_PER_SEC;
+		clockEnd = clock();
+		elapsed = ((double)(clockEnd - clockStart)) / CLOCKS_PER_SEC;
 
 		while (SDL_PollEvent(&event))
 		{
